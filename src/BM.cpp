@@ -1,6 +1,12 @@
 #include "BM.h"
 #include "vars.h"
+#include "micro_sd.h"
 #include <DFRobot_BMP3XX.h>
+#include "SD.h"
+#include "string.h"
+#include "vars.h"
+
+using namespace std;
 
 #define CALIBRATE_ABSOLUTE_DIFFERENCE
 
@@ -46,17 +52,18 @@ void setup_BM(){
     Serial.println();
 }
 
-float temperature;
-float Pressure;
-float altitude;
-
 void update_BM(){
 
     Pressure = sensor.readPressPa();
     altitude = sensor.readAltitudeM();
     temperature = sensor.readTempC();
 
+    if(altitude>max_alti){
+        max_alti = altitude;
+    }
+
 }
+
 
 void print_BM(){
 
@@ -71,7 +78,7 @@ void print_BM(){
     // Serial.println(" Hz");
 
     Serial.println();
-    update_BM();
+    //update_BM(SD);
     Serial.print("temperature : ");
     Serial.print(temperature);
     Serial.println(" C");
@@ -84,10 +91,13 @@ void print_BM(){
     Serial.print(altitude);
     Serial.println(" m");
 
-    if(altitude>max_alti){
-        max_alti = altitude;
-        Serial.print(max_alti);
-    }
+    Serial.print("Max altitude : ");
+    Serial.println(max_alti);
+
+    Serial.print("Started: ");
+    Serial.println(started);
+
+
 
     Serial.println();
 }
