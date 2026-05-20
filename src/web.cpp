@@ -1,4 +1,5 @@
 #include <WiFi.h>
+#include "esp_sleep.h"
 #include "web.h"
 #include "BM.h"
 #include "hardware.h"
@@ -50,14 +51,18 @@ void Print_client(WiFiClient client){
 
             
                     // turns the GPIOs on and off
-                    if (header.indexOf("GET /27/on") >= 0) {
+                    if (header.indexOf("GET /on") >= 0) {
                         if(clicked_time == 0){
                             clicked_time = millis();
                         }
                         
 
-                    } else if (header.indexOf("GET /27/off") >= 0) {
+                    } else if (header.indexOf("GET /off") >= 0) {
                         clicked_time = 0;
+                    }else if(header.indexOf("GET /reset") >= 0){
+                        ESP.restart();
+                    }else if(header.indexOf("GET /SHUTDOWN") >= 0){
+                        esp_deep_sleep_start();
                     }
 
                     client.println(millis());
@@ -73,29 +78,35 @@ void Print_client(WiFiClient client){
                     // CSS to style the on/off buttons 
                     // Feel free to change the background-color and font-size attributes to fit your preferences
                     client.println("<style>html { font-family: Helvetica; display: inline-block; margin: 0px auto; text-align: center;}");
-                    client.println(".button { background-color: #fa0303ff; border: none; color: white; padding: 16px 40px;");
-                    client.println("text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}");
-                    client.println(".button2 {background-color: #555555;}</style></head>");
+                    client.println(".button {border: none; color: white; padding: 16px 40px; text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}");
+                    client.println(".button_START {background-color: #fbb400;}");
+                    client.println(".button_RESET {background-color: #fe0000;}");
+                    client.println(".button_SHUTDOWN {background-color: #000000;}");
+                    client.println(".button_OFF {background-color: #555555;}</style></head>");
             
                     // Web Page Heading
                     client.println("<body><h1>SMOK</h1>");
                
                     // Display current state, and ON/OFF buttons for GPIO 27  
-                    client.println("<p>Rozpocznij Odliczanie (10s)" "</p>");
+                    client.println("<p>Rozpocznij Odliczanie (5s)" "</p>");
                     // If the output27State is off, it displays the ON button
 
        
                     if (started!=true) {
                         if(clicked_time>0){
-                            client.println("<p><a href=\"/27/off\"><button class=\"button button2\">");
+                            client.println("<p><a href=\"/off\"><button class=\"button button_OFF\">");
                             client.println(countdown-((millis()-clicked_time)/1000));
                             client.println("</button></a></p>");
                         }else{
-                            client.println("<p><a href=\"/27/on\"><button class=\"button\">Start</button></a></p>");
+                            client.println("<p><a href=\"/on\"><button class=\"button button_START\">Start</button></a></p>");
                         }
                     } else {
-                        client.println("<p><a href=\"/27/off\"><button class=\"button button2\">Leci!!!</button></a></p>");
+                        client.println("<p><a href=\"/off\"><button class=\"button button_OFF\">Leci!!!</button></a></p>");
                     }
+                    client.println("<p><a href=\"/RESET\"><button class=\"button button_RESET\">RESET</button></a></p>");
+
+
+                    client.print("<p><a href=\"/SHUTDOWN\"><button class=\"button button_SHUTDOWN\">SHUTDOWN</button></a></p>");
 
                     client.println("<div><h2>Dane z czujnikow:</h2> <p> B388: <ul> <li>Pressure");
                     client.println(Pressure);

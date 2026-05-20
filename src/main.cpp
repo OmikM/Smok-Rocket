@@ -1,4 +1,5 @@
 #include <WiFi.h>
+#include "esp_sleep.h"
 #include "web.h"
 #include "hardware.h"
 #include "BM.h"
@@ -20,20 +21,15 @@ void setup() {
 	hardware_setup();
 	digitalWrite(relay_engine_pin, LOW);
 
-  	// setup_BM();
+  	setup_BM();
+	delay(5000);
+  	SPI.begin(18, 19, 23, 5);
+	SPI.setDataMode(SPI_MODE0);
 
-
-  	// if(!SD.begin(5)){
-	//     Serial.println("Card Mount Failed");
-	//     return;
-  	// }
-
-  	// uint8_t cardType = SD.cardType();
-
-  	// if(cardType == CARD_NONE){
-    // 	Serial.println("No SD card attached");
-    // 	return;
-  	// }
+	if(!SD.begin(5)){
+    	Serial.println("Card Mount Failed");
+    	return;
+	}	
 }
 
 void start(){
@@ -103,12 +99,18 @@ void loop(){
     	start();
     }
 
-	// if(started){
-	// 	if(para_opend == false){
-	// 		if(para_con()){
-	// 			para_open();
-	// 		}
-	// 	}
-	// }
+	if(started){
+		// if wyłącz po czasie digitalWrite(relay_engine_pin, HIGH);
+		//wyłączenie zapalnika
+		if(millis()-start_time> time_igniter){
+			digitalWrite(relay_engine_pin, LOW);
+		}
+
+		if(para_opend == false){
+			if(para_con()){
+				para_open();
+			}
+		}
+	}
 
 }
