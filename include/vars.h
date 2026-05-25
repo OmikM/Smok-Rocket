@@ -6,6 +6,8 @@ const int min_time_para = 2;
 //m
 const float alti_diff = 0.5;
 const int time_igniter = 200;
+const long time_turnoff = 120000;
+
 
 const int countdown = 5;
 
@@ -20,5 +22,6 @@ extern float temperature;
 extern float Pressure;
 extern float altitude;
 
+extern int para_open_time;
 
 extern bool para_opend;

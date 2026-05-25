@@ -13,10 +13,10 @@ using namespace std;
 
 
 
-void readFile(fs::FS &fs, const char * path){
+void readFile(const char * path){
     Serial.printf("Reading file: %s\n", path);
 
-    File file = fs.open(path);
+    File file = SD.open(path);
     if(!file){
         Serial.println("Failed to open file for reading");
         return;
@@ -30,10 +30,9 @@ void readFile(fs::FS &fs, const char * path){
 }
 
 
-void writeFile(fs::FS &fs, const char * path, const char * message){
+void writeFile(const char * path, const char * message){
     Serial.printf("Writing file: %s\n", path);
-
-    File file = fs.open(path, FILE_WRITE);
+    File file = SD.open(path, FILE_WRITE);
     if(!file){
         Serial.println("Failed to open file for writing");
         return;
@@ -46,10 +45,10 @@ void writeFile(fs::FS &fs, const char * path, const char * message){
     file.close();
 }
 
-void appendFile(fs::FS &fs, const char * path, const char * message){
+void appendFile(const char * path, const char * message){
     Serial.printf("Appending to file: %s\n", path);
 
-    File file = fs.open(path, FILE_APPEND);
+    File file = SD.open(path, FILE_APPEND);
     if(!file){
         Serial.println("Failed to open file for appending");
         return;
@@ -62,27 +61,29 @@ void appendFile(fs::FS &fs, const char * path, const char * message){
     file.close();
 }
 
-void write_log_start(fs::FS &fs){
-    writeFile(SD, "log.txt", "time,temperature,altitude,Pressure \n");
+void write_log_start(){
+    writeFile("/log.txt", "time,temperature,altitude,Pressure \n");
 
     string row = 
-        "Start: \n  Time: " + to_string(millis()) + '\n' + 
-        "  temperature: " + to_string(start_temp) + '\n' +  
-        "  temperature: " + to_string(start_alti) + '\n' + 
+        "Start: \n  Time: " + to_string(millis()) + "\n" + 
+        "  temperature: " + to_string(start_temp) + "\n" +  
+        "  altitude: " + to_string(start_alti) + "\n" + 
         "  presure: " +to_string(start_pre) + "\n";
 
-    writeFile(SD, "data.txt", row.c_str());
+    Serial.print(row.c_str());
+
+    writeFile("/data.txt", row.c_str());
 }
 
 
-void save_data_BM(fs::FS &fs){
+void save_data_BM(){
     string row = 
     to_string((millis() - start_time)) + ',' + 
     to_string(temperature) + ',' +  
     to_string(altitude-start_alti) + ',' + 
     to_string(Pressure) + "\n";
 
-    appendFile(SD, "log.txt", row.c_str());
+    appendFile("/log.txt", row.c_str());
 }
 
 

@@ -7,6 +7,7 @@ bool started = false;
 unsigned long start_time = 0;
 
 bool para_opend = false;
+int para_open_time;
 
 float start_temp = 0;
 float start_pre = 0;

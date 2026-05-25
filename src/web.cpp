@@ -111,9 +111,9 @@ void Print_client(WiFiClient client){
                     client.println("<div><h2>Dane z czujnikow:</h2> <p> B388: <ul> <li>Pressure");
                     client.println(Pressure);
                     client.println("</li> <li> altitude");
-                    client.println(Pressure);
-                    client.println("</li> <li>temperature");
                     client.println(altitude);
+                    client.println("</li> <li>temperature");
+                    client.println(temperature);
 
                     client.println("</li> </ul></p></div>");
 

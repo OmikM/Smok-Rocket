@@ -78,7 +78,7 @@ void print_BM(){
     // Serial.println(" Hz");
 
     Serial.println();
-    //update_BM(SD);
+    update_BM();
     Serial.print("temperature : ");
     Serial.print(temperature);
     Serial.println(" C");

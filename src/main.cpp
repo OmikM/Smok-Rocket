@@ -39,11 +39,12 @@ void start(){
 	start_temp = temperature;
 	start_pre = Pressure;
 	start_alti = altitude;
-	write_log_start(SD);
+	write_log_start();
 }
 
 void para_open(){
 	digitalWrite(relay_parachute_pin, HIGH);
+	para_open_time = millis();
 
 	para_opend = true;
 }
@@ -73,19 +74,19 @@ int i;
 long long last_save_time = 0;
 
 void loop(){
+	delay(1);
 	i++;
-	//update_BM();
+	update_BM();
     if(i%1000==0){
-        Serial.print("AP IP address: ");
-        Serial.println(IP);
         i = 0;
-		// print_BM();
     }
 
-	// if(millis() - last_save_time > 100 and started){
-	// 	last_save_time = millis();
-	// 	// save_data_BM(SD);
-	// }
+	if(millis() - last_save_time > 500 and started){
+		last_save_time = millis();
+		save_data_BM();
+		print_BM();
+
+	}
 	
 	WiFiClient client = server.available();   // Listen for incoming clients
 
@@ -106,10 +107,19 @@ void loop(){
 			digitalWrite(relay_engine_pin, LOW);
 		}
 
+
+
 		if(para_opend == false){
 			if(para_con()){
 				para_open();
 			}
+		}else if (millis()-start_time > time_igniter){
+			digitalWrite(relay_parachute_pin, LOW);
+		}
+
+
+		if(millis()-start_time> time_turnoff){
+			esp_deep_sleep_start();
 		}
 	}
 
